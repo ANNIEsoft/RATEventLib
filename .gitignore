@@ -1,0 +1,4 @@
+*.so
+*RootDict.cc
+*RootDict.h
+*.o
