@@ -1,12 +1,11 @@
 #include <iostream>
-//#include <string_utilities.hpp>
-//#include <dprintf.hpp>
-
+#include <string_utilities.hpp>
+#include <dprintf.hpp>
+#include<set>
 #include <TrackNode.hh>
 #include <TrackCursor.hh>
 
 using namespace std;
-using namespace CLHEP;
 
 namespace RAT {
 
@@ -226,12 +225,13 @@ std::string TrackCursor::PrintTrack(TrackNode *node)
 			        cur->GetVolume().c_str());
 
     string ene;
-    if (cur->GetParticleName() == "opticalphoton")
+    if (cur->GetParticleName() == "opticalphoton"){
       double c_light = 2.99792458e+8 * (1000./1.e+9); //Hard-coded from
                                                       //CLHEP/units/PhysicalConstants.h
       double h_Planck = 6.62606896e-34 * (1e-6/1.6021764e-19) * 1.e+9;
-      double nm = 1.
+      double nm = 1.;
       ene = dformat("%3.0f nm ", (h_Planck*c_light / cur->GetKE()) / nm);
+    }
     else if (cur->GetKE() < 0.001)
       ene = "<0.001 ";
     else
