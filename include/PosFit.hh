@@ -15,7 +15,8 @@
 #include <TObject.h>
 #include <TVector3.h>
 
-
+namespace RAT {
+  namespace DS {
 class PosFit {
 public:
   PosFit(const char *name) : posname(name), pos(-99999, -99999, -99999) {}
@@ -36,6 +37,7 @@ protected:
   TVector3 pos;
 };
 
-
+    }
+  }
 #endif
 

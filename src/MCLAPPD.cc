@@ -1,4 +1,4 @@
-#include <RAT/DS/MCLAPPD.hh>
+#include <MCLAPPD.hh>
 
 ClassImp(RAT::DS::MCLAPPD)
 

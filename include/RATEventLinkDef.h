@@ -4,8 +4,11 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class RAT::DS::PMTInfo+;
-#pragma link C++ class RAT::DS::LAPPDInfo+;
+//#pragma link C++ nestedtypedef;
+//#pragma link C++ nestedclass;
+
+#pragma link C++ class PMTInfo+;
+#pragma link C++ class LAPPDInfo+;
 
 #pragma link C++ class RAT::DS::MC+;
 #pragma link C++ class RAT::DS::MCParticle+;
@@ -45,8 +48,8 @@
 #pragma link C++ class vector<TVector3>;
 
 #pragma link C++ class vector<RAT::DS::Root>;
-#pragma link C++ class vector<RAT::DS::PMTInfo>;
-#pragma link C++ class vector<RAT::DS::LAPPDInfo>;
+#pragma link C++ class vector<PMTInfo>;
+#pragma link C++ class vector<LAPPDInfo>;
 
 #pragma link C++ class vector<RAT::DS::MC>;
 #pragma link C++ class vector<RAT::DS::MCParticle>;
