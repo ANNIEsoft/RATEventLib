@@ -12,7 +12,7 @@ CXXFLAGS      = -g -Wall -fPIC -O0
 UNAME := $(shell uname)
 
 ROOTCFLAGS   := $(shell root-config --cflags)
-ROOTLIBS     := $(shell root-config --libs) 
+ROOTLIBS     := $(shell root-config --libs) -lGenVector
 ROOTGLIBS    := $(shell root-config --glibs)
 
 CXXFLAGS     += $(ROOTCFLAGS)

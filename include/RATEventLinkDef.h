@@ -46,7 +46,7 @@
 #pragma link C++ class map<int, int>+;
 #pragma link C++ class map<int, vector<int> >+;
 #pragma link C++ class vector<TVector3>;
-
+#pragma link C++ class vector<TLorentzVector>; 
 #pragma link C++ class vector<RAT::DS::Root>;
 #pragma link C++ class vector<PMTInfo>;
 #pragma link C++ class vector<LAPPDInfo>;
