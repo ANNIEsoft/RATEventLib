@@ -36,7 +36,7 @@ ROOTSO := $(LIBDIR)/libRATEvent.so
 
 ROOTDICT := $(SRCDIR)/RATEventRootDict.cc
 
-ROOTSRC := $(INCDIR)/PosFit.hh $(SRCDIR)/DSReader.cc $(INCDIR)/DSReader.hh $(SRCDIR)/Root.cc $(INCDIR)/Root.hh $(SRCDIR)/MCLAPPD.cc $(INCDIR)/MCLAPPD.hh $(SRCDIR)/MCPMT.cc $(INCDIR)/MCPMT.hh $(SRCDIR)/RunStore.cc $(INCDIR)/RunStore.hh $(INCDIR)/Centroid.hh $(INCDIR)/Calib.hh $(INCDIR)/EV.hh $(INCDIR)/LAPPD.hh $(INCDIR)/LAPPDHit.hh $(INCDIR)/LAPPDInfo.hh $(INCDIR)/MC.hh $(INCDIR)/MCParticle.hh $(INCDIR)/MCPhoton.hh $(INCDIR)/MCSummary.hh $(INCDIR)/MCTrack.hh $(INCDIR)/MCTrackStep.hh $(INCDIR)/PathFit.hh $(INCDIR)/PMT.hh $(INCDIR)/PMTInfo.hh $(INCDIR)/Run.hh $(INCDIR)/RATEventLinkDef.hh
+ROOTSRC := $(INCDIR)/PosFit.hh $(SRCDIR)/DSReader.cc $(INCDIR)/DSReader.hh $(SRCDIR)/Root.cc $(INCDIR)/Root.hh $(SRCDIR)/MCLAPPD.cc $(INCDIR)/MCLAPPD.hh $(SRCDIR)/MCPMT.cc $(INCDIR)/MCPMT.hh $(SRCDIR)/RunStore.cc $(INCDIR)/RunStore.hh $(INCDIR)/Centroid.hh $(INCDIR)/Calib.hh $(INCDIR)/EV.hh $(INCDIR)/LAPPD.hh $(INCDIR)/LAPPDHit.hh $(INCDIR)/LAPPDInfo.hh $(INCDIR)/MC.hh $(INCDIR)/MCParticle.hh $(INCDIR)/MCPhoton.hh $(INCDIR)/MCSummary.hh $(INCDIR)/MCTrack.hh $(INCDIR)/MCTrackStep.hh $(INCDIR)/PathFit.hh $(INCDIR)/PMT.hh $(INCDIR)/PMTInfo.hh $(INCDIR)/Run.hh $(INCDIR)/RATEventLinkDef.h
 ROOTOBJS := $(TMPDIR)/MCLAPPD.o $(TMPDIR)/MCPMT.o $(TMPDIR)/RunStore.o $(TMPDIR)/DSReader.o $(TMPDIR)/Root.o $(TMPDIR)/RATEventRootDict.o
 
 $(TMPDIR)/%.o : $(SRCDIR)/%.cc
@@ -53,7 +53,7 @@ $(ROOTDICT) : $(ROOTSRC)
 
 rootcint : $(ROOTSRC)
 	@echo "<**Rootcint**>"
-	rootcint -f $(ROOTDICT) -c -I$(INCDIR) -I$(shell root-config --incdir) -p Root.hh MCLAPPD.hh MCPMT.hh RunStore.hh Centroid.hh Calib.hh EV.hh LAPPD.hh LAPPDHit.hh LAPPDInfo.hh MC.hh MCParticle.hh MCPhoton.hh MCSummary.hh MCTrack.hh MCTrackStep.hh PathFit.hh PMT.hh PMTInfo.hh PosFit.hh Run.hh RunStore.hh
+	rootcint -f $(ROOTDICT) -c -I$(INCDIR) -I$(shell root-config --incdir) -p Root.hh MCLAPPD.hh MCPMT.hh RunStore.hh Centroid.hh Calib.hh EV.hh LAPPD.hh LAPPDHit.hh LAPPDInfo.hh MC.hh MCParticle.hh MCPhoton.hh MCSummary.hh MCTrack.hh MCTrackStep.hh PathFit.hh PMT.hh PMTInfo.hh PosFit.hh Run.hh RunStore.hh DSReader.hh
 
 shared: $(ROOTDICT) $(ROOTSRC) $(ROOTOBJS)
 	@echo "<**Shared**>"
