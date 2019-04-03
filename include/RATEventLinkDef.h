@@ -33,8 +33,10 @@
 #pragma link C++ class RAT::DS::Run+;
 
 #pragma link C++ class RAT::DSReader;
+//#pragma link C++ class json::Value+; 
 
-
+#pragma link C++ class RAT::ObjInt+;
+#pragma link C++ class RAT::ObjDbl+;
 #pragma link C++ class RAT::Log+;
 #pragma link C++ class RAT::DBFieldCallback+;
 

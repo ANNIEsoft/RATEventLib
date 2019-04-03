@@ -6,6 +6,10 @@
 #include <TrackCursor.hh>
 #include <map>
 
+using namespace RAT;
+using namespace RAT::DS;
+
+
 namespace RAT {
 
 class TrackNav {

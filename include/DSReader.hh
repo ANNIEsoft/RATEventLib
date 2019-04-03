@@ -7,9 +7,6 @@
 #include <TTree.h>
 #include <string>
 
-using namespace RAT;
-using namespace RAT::DS;
-
 namespace RAT {
 
 // Convenience class for ROOT scripts
