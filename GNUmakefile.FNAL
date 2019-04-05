@@ -1,0 +1,84 @@
+# $Id: GNUmakefile,v 1.17 2006/09/04 15:43:27 t2k Exp $
+# --------------------------------------------------------------
+# GNUmakefile for examples module.  Gabriele Cosmo, 06/04/98.
+# --------------------------------------------------------------
+
+
+ROOTCFLAGS   := $(shell root-config --cflags) -DUSE_ROOT -fPIC
+ROOTLIBS     := $(shell root-config --libs)
+
+CPPFLAGS  += -Wno-deprecated 
+CPPFLAGS  += -fdiagnostics-color=always -Wno-sign-compare
+CPPFLAGS  += -I$(PWD)/include
+CPPFLAGS  += -I$(ROOTSYS)/include $(ROOTCFLAGS) 
+EXTRALIBS += $(ROOTLIBS)
+
+CXX = g++
+G4SYSTEM=Linux-g++
+
+G4WORKDIR := .
+G4TMPDIR := $(G4WORKDIR)/tmp/$(G4SYSTEM)/RATEvent
+
+INCDIR = ./include
+SRCDIR = ./src
+TMPDIR = ./tmp
+LIBDIR = ./lib
+BINDIR = ./bin
+
+INCLUDES = -I$(INCDIR)
+
+# Note dependencies not yet set up right yet
+
+ROOTSO := $(LIBDIR)/libRATEvent.so
+
+ROOTSRC := $(SRCDIR)/fileio.cc $(INCDIR)/fileio.hpp $(SRCDIR)/file_system.cc $(INCDIR)/file_system.hpp $(SRCDIR)/debug.cc $(INCDIR)/debug.hpp $(INCDIR)/exceptions.hpp $(SRCDIR)/exceptions.cc $(INCDIR)/string_utilities.hpp $(SRCDIR)/string_utilities.cc $(INCDIR)/string_utilities.tpp $(INCDIR)/textio.hpp $(SRCDIR)/textio.cc $(INCDIR)/os_fixes.hpp $(SRCDIR)/os_fixes.cc $(INCDIR)/dprintf.hpp $(SRCDIR)/dprintf.cc $(INCDIR)/TrackNode.hh $(INCDIR)/TrackNav.hh $(SRCDIR)/TrackNav.cc $(INCDIR)/TrackCursor.hh $(SRCDIR)/TrackCursor.cc $(INCDIR)/PosFit.hh $(SRCDIR)/DSReader.cc $(INCDIR)/DSReader.hh $(SRCDIR)/Root.cc $(INCDIR)/Root.hh $(SRCDIR)/MCLAPPD.cc $(INCDIR)/MCLAPPD.hh $(SRCDIR)/MCPMT.cc $(INCDIR)/MCPMT.hh $(SRCDIR)/RunStore.cc $(INCDIR)/RunStore.hh $(INCDIR)/Centroid.hh $(INCDIR)/Calib.hh $(INCDIR)/EV.hh $(INCDIR)/LAPPD.hh $(INCDIR)/LAPPDHit.hh $(INCDIR)/LAPPDInfo.hh $(INCDIR)/MC.hh $(INCDIR)/MCParticle.hh $(INCDIR)/MCPhoton.hh $(INCDIR)/MCSummary.hh $(INCDIR)/MCTrack.hh $(INCDIR)/MCTrackStep.hh $(INCDIR)/PathFit.hh $(INCDIR)/PMT.hh $(INCDIR)/PMTInfo.hh $(INCDIR)/Run.hh $(INCDIR)/ObjInt.hh $(INCDIR)/ObjDbl.hh $(INCDIR)/RATEventLinkDef.h
+
+ROOTOBJS := $(G4TMPDIR)/MCLAPPD.o $(G4TMPDIR)/MCPMT.o $(G4TMPDIR)/RunStore.o $(G4TMPDIR)/DSReader.o $(G4TMPDIR)/Root.o $(G4TMPDIR)/TrackCursor.o $(G4TMPDIR)/TrackNav.o $(G4TMPDIR)/dprintf.o $(G4TMPDIR)/textio.o $(G4TMPDIR)/os_fixes.o $(G4TMPDIR)/debug.o $(G4TMPDIR)/exceptions.o $(G4TMPDIR)/file_system.o $(G4TMPDIR)/fileio.o $(G4TMPDIR)/string_utilities.o $(G4TMPDIR)/RATEventRootDict.o
+
+
+
+
+
+.PHONY: directories
+
+all: directories $(SRCDIR)/RATEventRootDict.cc $(LIBDIR)/libRATEvent.so
+
+directories: $(G4TMPDIR)
+
+$(G4TMPDIR) :
+	mkdir -p $(G4TMPDIR)
+
+
+$(LIBDIR)/libRATEvent.so : $(ROOTOBJS) 
+	@echo Compiling $(LIBDIR)/libRATEvent.so with GNUMakefile ...
+	@if [ ! -d $(G4TMPDIR) ] ; then mkdir $(G4TMPDIR) ; echo mkdir $(G4TMPDIR) ;fi
+	@$(CXX) -shared -O $^ -o $(ROOTSO) $(ROOTLIBS)
+	@cp $(SRCDIR)/RATEventRootDict_rdict.pcm $(LIBDIR)
+
+
+$(SRCDIR)/RATEventRootDict.cc : $(ROOTSRC)
+	@echo Compiling rootcint ...
+	rootcling -f $(SRCDIR)/RATEventRootDict.cc -rml $(LIBDIR)/libRATEvent.so -rmf $(LIBDIR)/libRATEvent.rootmap -I$(INCDIR) -I$(shell root-config --incdir) Root.hh MCLAPPD.hh MCPMT.hh RunStore.hh Centroid.hh Calib.hh EV.hh LAPPD.hh LAPPDHit.hh LAPPDInfo.hh MC.hh MCParticle.hh MCPhoton.hh MCSummary.hh MCTrack.hh MCTrackStep.hh PathFit.hh PMT.hh PMTInfo.hh PosFit.hh Run.hh RunStore.hh DSReader.hh TrackNav.hh TrackCursor.hh TrackNode.hh ObjInt.hh ObjDbl.hh RATEventLinkDef.h
+
+rootcint: $(SRCDIR)/RATEventRootDict.cc
+
+$(G4TMPDIR)/%.o: $(SRCDIR)/%.cc 
+	@echo Compiling $*.cc ...
+	@if [ ! -d $(G4TMPDIR) ] ; then mkdir $(G4TMPDIR) ; echo mkdir $(G4TMPDIR) ;fi
+	@echo $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(INCLUDES) -c -o $(G4TMPDIR)/$(*F).o $<
+	@$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(INCLUDES) -c -o $(G4TMPDIR)/$(*F).o $<
+
+$(G4TMPDIR)/RATEventRootDict.o: $(SRCDIR)/RATEventRootDict.cc
+	@echo Compiling $*.cc ...
+	@if [ ! -d $(G4TMPDIR) ] ; then mkdir $(G4TMPDIR) ; echo mkdir $(G4TMPDIR) ;fi
+	@echo $(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $(G4TMPDIR)/$(*F).o $<
+	@$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $(G4TMPDIR)/$(*F).o $<
+
+clean :
+	@rm -f $(G4TMPDIR)/*.o
+	@rm -f $(SRCDIR)/RATEventRootDict.cc
+	@rm -f $(LIBDIR)/libRATEvent.so
+	@rm -f $(LIBDIR)/libRATEvent.rootmap 
+	@rm -f $(SRCDIR)/RATEventRootDict_rdict.pcm 
+	@rm -f $(LIBDIR)/RATEventRootDict_rdict.pcm 
+

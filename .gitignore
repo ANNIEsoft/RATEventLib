@@ -2,3 +2,5 @@
 *RootDict.cc
 *RootDict.h
 *.o
+*.pcm
+*.rootmap
