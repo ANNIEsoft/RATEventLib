@@ -5,7 +5,8 @@
 
 
 ROOTCFLAGS   := $(shell root-config --cflags) -DUSE_ROOT -fPIC
-ROOTLIBS     := $(shell root-config --libs)
+ROOTLIBS     := $(shell root-config --libs) -lGenVector
+ROOTGLIBS    := $(shell root-config --glibs)
 
 CPPFLAGS  += -Wno-deprecated 
 CPPFLAGS  += -fdiagnostics-color=always -Wno-sign-compare
@@ -21,14 +22,12 @@ G4TMPDIR := $(G4WORKDIR)/tmp/$(G4SYSTEM)/RATEvent
 
 INCDIR = ./include
 SRCDIR = ./src
-TMPDIR = ./tmp
 LIBDIR = ./lib
 BINDIR = ./bin
 
 INCLUDES = -I$(INCDIR)
 
-# Note dependencies not yet set up right yet
-
+ROOTDICT = $(SRCDIR)/RATEventRootDict.cc
 ROOTSO := $(LIBDIR)/libRATEvent.so
 
 ROOTSRC := $(SRCDIR)/fileio.cc $(INCDIR)/fileio.hpp $(SRCDIR)/file_system.cc $(INCDIR)/file_system.hpp $(SRCDIR)/debug.cc $(INCDIR)/debug.hpp $(INCDIR)/exceptions.hpp $(SRCDIR)/exceptions.cc $(INCDIR)/string_utilities.hpp $(SRCDIR)/string_utilities.cc $(INCDIR)/string_utilities.tpp $(INCDIR)/textio.hpp $(SRCDIR)/textio.cc $(INCDIR)/os_fixes.hpp $(SRCDIR)/os_fixes.cc $(INCDIR)/dprintf.hpp $(SRCDIR)/dprintf.cc $(INCDIR)/TrackNode.hh $(INCDIR)/TrackNav.hh $(SRCDIR)/TrackNav.cc $(INCDIR)/TrackCursor.hh $(SRCDIR)/TrackCursor.cc $(INCDIR)/PosFit.hh $(SRCDIR)/DSReader.cc $(INCDIR)/DSReader.hh $(SRCDIR)/Root.cc $(INCDIR)/Root.hh $(SRCDIR)/MCLAPPD.cc $(INCDIR)/MCLAPPD.hh $(SRCDIR)/MCPMT.cc $(INCDIR)/MCPMT.hh $(SRCDIR)/RunStore.cc $(INCDIR)/RunStore.hh $(INCDIR)/Centroid.hh $(INCDIR)/Calib.hh $(INCDIR)/EV.hh $(INCDIR)/LAPPD.hh $(INCDIR)/LAPPDHit.hh $(INCDIR)/LAPPDInfo.hh $(INCDIR)/MC.hh $(INCDIR)/MCParticle.hh $(INCDIR)/MCPhoton.hh $(INCDIR)/MCSummary.hh $(INCDIR)/MCTrack.hh $(INCDIR)/MCTrackStep.hh $(INCDIR)/PathFit.hh $(INCDIR)/PMT.hh $(INCDIR)/PMTInfo.hh $(INCDIR)/Run.hh $(INCDIR)/ObjInt.hh $(INCDIR)/ObjDbl.hh $(INCDIR)/RATEventLinkDef.h
@@ -39,9 +38,9 @@ ROOTOBJS := $(G4TMPDIR)/MCLAPPD.o $(G4TMPDIR)/MCPMT.o $(G4TMPDIR)/RunStore.o $(G
 
 
 
-.PHONY: directories
+.PHONY: all directories
 
-all: directories $(SRCDIR)/RATEventRootDict.cc $(LIBDIR)/libRATEvent.so
+all: directories rootcling $(LIBDIR)/libRATEvent.so
 
 directories: $(G4TMPDIR)
 
@@ -50,25 +49,30 @@ $(G4TMPDIR) :
 
 
 $(LIBDIR)/libRATEvent.so : $(ROOTOBJS) 
-	@echo Compiling $(LIBDIR)/libRATEvent.so with GNUMakefile ...
+	@echo Compiling libRATEvent.so with GNUMakefile ...
 	@if [ ! -d $(G4TMPDIR) ] ; then mkdir $(G4TMPDIR) ; echo mkdir $(G4TMPDIR) ;fi
-	@$(CXX) -shared -O $^ -o $(ROOTSO) $(ROOTLIBS)
+	@$(CXX) -shared -O $^ -o $(ROOTSO) $(ROOTLIBS) $(ROOTGLIBS)
 	@cp $(SRCDIR)/RATEventRootDict_rdict.pcm $(LIBDIR)
 
-
-$(SRCDIR)/RATEventRootDict.cc : $(ROOTSRC)
-	@echo Compiling rootcint ...
-	rootcling -f $(SRCDIR)/RATEventRootDict.cc -rml $(LIBDIR)/libRATEvent.so -rmf $(LIBDIR)/libRATEvent.rootmap -I$(INCDIR) -I$(shell root-config --incdir) Root.hh MCLAPPD.hh MCPMT.hh RunStore.hh Centroid.hh Calib.hh EV.hh LAPPD.hh LAPPDHit.hh LAPPDInfo.hh MC.hh MCParticle.hh MCPhoton.hh MCSummary.hh MCTrack.hh MCTrackStep.hh PathFit.hh PMT.hh PMTInfo.hh PosFit.hh Run.hh RunStore.hh DSReader.hh TrackNav.hh TrackCursor.hh TrackNode.hh ObjInt.hh ObjDbl.hh RATEventLinkDef.h
+rootcling : $(ROOTSRC)
+	@echo Compiling with rootcling ...
+	rootcling -f $(ROOTDICT) -rml libRATEvent.so -rmf $(LIBDIR)/libRATEvent.rootmap -m $(LIBDIR)/RATEventRootDict_rdict.pcm $(INCLUDES) -I$(shell root-config --incdir) Root.hh MCLAPPD.hh MCPMT.hh RunStore.hh Centroid.hh Calib.hh EV.hh LAPPD.hh LAPPDHit.hh LAPPDInfo.hh MC.hh MCParticle.hh MCPhoton.hh MCSummary.hh MCTrack.hh MCTrackStep.hh PathFit.hh PMT.hh PMTInfo.hh PosFit.hh Run.hh RunStore.hh DSReader.hh TrackNav.hh TrackCursor.hh TrackNode.hh ObjInt.hh ObjDbl.hh RATEventLinkDef.h
 
 rootcint: $(SRCDIR)/RATEventRootDict.cc
 
-$(G4TMPDIR)/%.o: $(SRCDIR)/%.cc 
+$(G4TMPDIR)/RATEventRootDict.o: $(ROOTDICT)
+	@if [ ! -d $(G4TMPDIR) ] ; then mkdir $(G4TMPDIR) ; echo mkdir $(G4TMPDIR) ;fi
+	@echo $(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $(G4TMPDIR)/$(*F).o $<
+	@$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $(G4TMPDIR)/$(*F).o $<
+
+
+$(G4TMPDIR)/%.o: $(SRCDIR)/%.cc include/%.hpp
 	@echo Compiling $*.cc ...
 	@if [ ! -d $(G4TMPDIR) ] ; then mkdir $(G4TMPDIR) ; echo mkdir $(G4TMPDIR) ;fi
-	@echo $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(INCLUDES) -c -o $(G4TMPDIR)/$(*F).o $<
-	@$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(INCLUDES) -c -o $(G4TMPDIR)/$(*F).o $<
+	@echo $(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $(G4TMPDIR)/$(*F).o $<
+	@$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $(G4TMPDIR)/$(*F).o $<
 
-$(G4TMPDIR)/RATEventRootDict.o: $(SRCDIR)/RATEventRootDict.cc
+$(G4TMPDIR)/%.o: $(SRCDIR)/%.cc include/%.hh
 	@echo Compiling $*.cc ...
 	@if [ ! -d $(G4TMPDIR) ] ; then mkdir $(G4TMPDIR) ; echo mkdir $(G4TMPDIR) ;fi
 	@echo $(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $(G4TMPDIR)/$(*F).o $<
