@@ -54,6 +54,8 @@ $(ROOTDICT) : $(ROOTSRC)
 rootcint : $(ROOTSRC)
 	@echo "<**Rootcint**>"
 	rootcint -f $(ROOTDICT) -c -I$(INCDIR) -I$(shell root-config --incdir) -p Root.hh MCLAPPD.hh MCPMT.hh RunStore.hh Centroid.hh Calib.hh EV.hh LAPPD.hh LAPPDHit.hh LAPPDInfo.hh MC.hh MCParticle.hh MCPhoton.hh MCSummary.hh MCTrack.hh MCTrackStep.hh PathFit.hh PMT.hh PMTInfo.hh PosFit.hh Run.hh RunStore.hh DSReader.hh TrackNav.hh TrackCursor.hh TrackNode.hh ObjInt.hh ObjDbl.hh
+	cp $(SRCDIR)/*.pcm $(LIBDIR)
+
 shared: $(ROOTDICT) $(ROOTSRC) $(ROOTOBJS)
 	@echo "<**Shared**>"
 ifeq ($(UNAME), Darwin) 
